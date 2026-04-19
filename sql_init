@@ -1,0 +1,188 @@
+-- 1. Departments
+CREATE TABLE departments (
+    department_id  SERIAL PRIMARY KEY,
+    name           VARCHAR(100) NOT NULL UNIQUE,
+    description    TEXT
+);
+
+-- 2. Patients
+CREATE TABLE patients (
+    patient_id    SERIAL PRIMARY KEY,
+    name          VARCHAR(100) NOT NULL,
+    gender        VARCHAR(10) CHECK (gender IN ('Male', 'Female', 'Other')),
+    date_of_birth DATE,
+    blood_group   VARCHAR(5) CHECK (blood_group IN ('A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-')),
+    phone         VARCHAR(15) UNIQUE,
+    email         VARCHAR(100) UNIQUE,
+    address       VARCHAR(255),
+    created_at    TIMESTAMP DEFAULT NOW()
+);
+
+-- 3. Doctors
+CREATE TABLE doctors (
+    doctor_id      SERIAL PRIMARY KEY,
+    name           VARCHAR(100) NOT NULL,
+    department_id  INT REFERENCES departments(department_id) ON DELETE SET NULL,
+    specialization VARCHAR(100),
+    phone          VARCHAR(15) UNIQUE,
+    email          VARCHAR(100) UNIQUE,
+    created_at     TIMESTAMP DEFAULT NOW()
+);
+
+-- 4. Doctor schedules
+CREATE TABLE doctor_schedules (
+    schedule_id   SERIAL PRIMARY KEY,
+    doctor_id     INT REFERENCES doctors(doctor_id) ON DELETE CASCADE,
+    day_of_week   VARCHAR(10) NOT NULL CHECK (day_of_week IN ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')),
+    start_time    TIME NOT NULL,
+    end_time      TIME NOT NULL,
+    slot_duration INT DEFAULT 30,
+    UNIQUE (doctor_id, day_of_week)
+);
+
+-- 5. Appointments
+CREATE TABLE appointments (
+    appointment_id   SERIAL PRIMARY KEY,
+    doctor_id        INT REFERENCES doctors(doctor_id) ON DELETE RESTRICT,
+    patient_id       INT REFERENCES patients(patient_id) ON DELETE RESTRICT,
+    appointment_date TIMESTAMP NOT NULL,
+    status           VARCHAR(20) DEFAULT 'Scheduled' CHECK (status IN ('Scheduled', 'Completed', 'Cancelled')),
+    notes            TEXT,
+    created_at       TIMESTAMP DEFAULT NOW(),
+    UNIQUE (doctor_id, appointment_date)
+);-- 1. Departments
+CREATE TABLE departments (
+    department_id  SERIAL PRIMARY KEY,
+    name           VARCHAR(100) NOT NULL UNIQUE,
+    description    TEXT
+);
+
+-- 2. Patients
+CREATE TABLE patients (
+    patient_id    SERIAL PRIMARY KEY,
+    name          VARCHAR(100) NOT NULL,
+    gender        VARCHAR(10) CHECK (gender IN ('Male', 'Female', 'Other')),
+    date_of_birth DATE,
+    blood_group   VARCHAR(5) CHECK (blood_group IN ('A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-')),
+    phone         VARCHAR(15) UNIQUE,
+    email         VARCHAR(100) UNIQUE,
+    address       VARCHAR(255),
+    created_at    TIMESTAMP DEFAULT NOW()
+);
+
+-- 3. Doctors
+CREATE TABLE doctors (
+    doctor_id      SERIAL PRIMARY KEY,
+    name           VARCHAR(100) NOT NULL,
+    department_id  INT REFERENCES departments(department_id) ON DELETE SET NULL,
+    specialization VARCHAR(100),
+    phone          VARCHAR(15) UNIQUE,
+    email          VARCHAR(100) UNIQUE,
+    created_at     TIMESTAMP DEFAULT NOW()
+);
+
+-- 4. Doctor schedules
+CREATE TABLE doctor_schedules (
+    schedule_id   SERIAL PRIMARY KEY,
+    doctor_id     INT REFERENCES doctors(doctor_id) ON DELETE CASCADE,
+    day_of_week   VARCHAR(10) NOT NULL CHECK (day_of_week IN ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')),
+    start_time    TIME NOT NULL,
+    end_time      TIME NOT NULL,
+    slot_duration INT DEFAULT 30,
+    UNIQUE (doctor_id, day_of_week)
+);
+
+-- 5. Appointments
+CREATE TABLE appointments (
+    appointment_id   SERIAL PRIMARY KEY,
+    doctor_id        INT REFERENCES doctors(doctor_id) ON DELETE RESTRICT,
+    patient_id       INT REFERENCES patients(patient_id) ON DELETE RESTRICT,
+    appointment_date TIMESTAMP NOT NULL,
+    status           VARCHAR(20) DEFAULT 'Scheduled' CHECK (status IN ('Scheduled', 'Completed', 'Cancelled')),
+    notes            TEXT,
+    created_at       TIMESTAMP DEFAULT NOW(),
+    UNIQUE (doctor_id, appointment_date)
+);
+
+
+
+
+
+
+
+
+-- 1. Departments
+INSERT INTO departments (name, description) VALUES
+('Cardiology',     'Heart and cardiovascular system'),
+('Orthopaedics',   'Bones, joints and muscles'),
+('ENT',            'Ear, nose and throat'),
+('General Medicine', 'General health and wellness'),
+('Dermatology',    'Skin related conditions');
+
+-- 2. Patients
+INSERT INTO patients (name, gender, date_of_birth, blood_group, phone, email, address) VALUES
+('Rahul Sharma',   'Male',   '1990-04-15', 'O+',  '9876543210', 'rahul@gmail.com',   'Koramangala, Bangalore'),
+('Priya Nair',     'Female', '1995-08-22', 'A+',  '9876543211', 'priya@gmail.com',   'Indiranagar, Bangalore'),
+('Arjun Mehta',    'Male',   '1988-01-10', 'B+',  '9876543212', 'arjun@gmail.com',   'Whitefield, Bangalore'),
+('Sneha Reddy',    'Female', '2000-11-05', 'AB+', '9876543213', 'sneha@gmail.com',   'HSR Layout, Bangalore'),
+('Vikram Singh',   'Male',   '1975-06-30', 'O-',  '9876543214', 'vikram@gmail.com',  'Jayanagar, Bangalore'),
+('Ananya Iyer',    'Female', '1992-03-18', 'A-',  '9876543215', 'ananya@gmail.com',  'Malleshwaram, Bangalore'),
+('Karan Patel',    'Male',   '1985-09-25', 'B-',  '9876543216', 'karan@gmail.com',   'Hebbal, Bangalore'),
+('Divya Menon',    'Female', '1998-12-01', 'AB-', '9876543217', 'divya@gmail.com',   'Electronic City, Bangalore');
+
+-- 3. Doctors
+INSERT INTO doctors (name, department_id, specialization, phone, email) VALUES
+('Dr. Arjun Kapoor',  1, 'Interventional Cardiology', '9845001001', 'arjun.kapoor@clinic.com'),
+('Dr. Meera Joshi',   1, 'Cardiac Electrophysiology', '9845001002', 'meera.joshi@clinic.com'),
+('Dr. Rajesh Verma',  2, 'Joint Replacement',         '9845001003', 'rajesh.verma@clinic.com'),
+('Dr. Sunita Rao',    2, 'Sports Medicine',            '9845001004', 'sunita.rao@clinic.com'),
+('Dr. Prakash Nair',  3, 'Rhinology',                 '9845001005', 'prakash.nair@clinic.com'),
+('Dr. Kavitha Menon', 4, 'Internal Medicine',         '9845001006', 'kavitha.menon@clinic.com'),
+('Dr. Suresh Pillai', 4, 'Diabetology',               '9845001007', 'suresh.pillai@clinic.com'),
+('Dr. Deepa Sharma',  5, 'Cosmetic Dermatology',      '9845001008', 'deepa.sharma@clinic.com');
+
+-- 4. Doctor schedules
+INSERT INTO doctor_schedules (doctor_id, day_of_week, start_time, end_time, slot_duration) VALUES
+-- Dr. Anil Kumar (Cardiology)
+(1, 'Monday',    '09:00', '13:00', 30),
+(1, 'Wednesday', '09:00', '13:00', 30),
+(1, 'Friday',    '09:00', '13:00', 30),
+-- Dr. Meera Joshi (Cardiology)
+(2, 'Tuesday',   '10:00', '14:00', 30),
+(2, 'Thursday',  '10:00', '14:00', 30),
+-- Dr. Rajesh Verma (Ortho)
+(3, 'Monday',    '14:00', '18:00', 45),
+(3, 'Wednesday', '14:00', '18:00', 45),
+(3, 'Friday',    '14:00', '18:00', 45),
+-- Dr. Sunita Rao (Ortho)
+(4, 'Tuesday',   '09:00', '13:00', 30),
+(4, 'Saturday',  '09:00', '12:00', 30),
+-- Dr. Prakash Nair (ENT)
+(5, 'Monday',    '10:00', '14:00', 20),
+(5, 'Thursday',  '10:00', '14:00', 20),
+-- Dr. Kavitha Menon (General)
+(6, 'Monday',    '09:00', '17:00', 15),
+(6, 'Tuesday',   '09:00', '17:00', 15),
+(6, 'Wednesday', '09:00', '17:00', 15),
+(6, 'Thursday',  '09:00', '17:00', 15),
+(6, 'Friday',    '09:00', '17:00', 15),
+-- Dr. Suresh Pillai (General)
+(7, 'Monday',    '14:00', '18:00', 30),
+(7, 'Wednesday', '14:00', '18:00', 30),
+(7, 'Friday',    '14:00', '18:00', 30),
+-- Dr. Deepa Sharma (Dermatology)
+(8, 'Tuesday',   '11:00', '15:00', 30),
+(8, 'Saturday',  '10:00', '14:00', 30);
+
+-- 5. Appointments
+INSERT INTO appointments (doctor_id, patient_id, appointment_date, status, notes) VALUES
+(1, 1, '2026-04-21 09:00:00', 'Scheduled',  'Routine cardiac checkup'),
+(1, 2, '2026-04-21 09:30:00', 'Scheduled',  'Follow up after ECG'),
+(2, 3, '2026-04-22 10:00:00', 'Scheduled',  'Palpitation complaints'),
+(3, 4, '2026-04-22 14:00:00', 'Scheduled',  'Knee pain evaluation'),
+(4, 5, '2026-04-22 09:00:00', 'Scheduled',  'Post surgery follow up'),
+(5, 6, '2026-04-21 10:00:00', 'Scheduled',  'Sinus congestion'),
+(6, 7, '2026-04-21 09:00:00', 'Completed',  'Fever and cold'),
+(6, 8, '2026-04-21 09:15:00', 'Completed',  'General health checkup'),
+(7, 1, '2026-04-21 14:00:00', 'Cancelled',  'Patient requested reschedule'),
+(8, 2, '2026-04-22 11:00:00', 'Scheduled',  'Acne treatment consultation');
