@@ -1,7 +1,12 @@
 const express = require("express");
+const cors    = require('cors');
+require('dotenv').config(); 
+
 const app = express();
 
-require('dotenv').config(); 
+app.use(cors());
+app.use(express.json());
+
 const db = require('./db');
 
 app.use(express.json())
@@ -9,6 +14,11 @@ app.use(express.json())
 app.get('/', (req, res) => {
     res.send('Clinic Management API is running!');
 });
+
+app.use('/api/departments',  require('./routes/departments'));
+// app.use('/api/patients',     require('./routes/patients'));
+// app.use('/api/doctors',      require('./routes/doctors'));
+// app.use('/api/appointments', require('./routes/appointments'));
 
 /* app.get('/api/patients',(req, res) => {
     const mock = [
