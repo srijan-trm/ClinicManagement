@@ -5,7 +5,7 @@ const getAllDepartments = async () => {
     return result.rows;
 }
 
-const getDepartmentByID = async (id) => {
+const getDepartmentById = async (id) => {
     const result = await pool.query('SELECT * FROM departments WHERE department_id = $1',[id]);
     return result.rows[0];    
 }
@@ -33,7 +33,7 @@ const deleteDepartment = async (id) => {
 
 module.exports = {
     createDepartment,
-    getDepartmentByID,
+    getDepartmentById,
     getAllDepartments,
     updateDepartment,
     deleteDepartment
