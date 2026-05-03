@@ -1,0 +1,103 @@
+-- 1. Patients
+INSERT INTO patients (name, gender, date_of_birth, blood_group, phone, email, address) VALUES
+('Rahul Sharma',    'Male',   '1990-04-15', 'O+',  '9876543210', 'rahul@gmail.com',    'Koramangala, Bangalore'),
+('Priya Nair',      'Female', '1995-08-22', 'A+',  '9876543211', 'priya@gmail.com',    'Indiranagar, Bangalore'),
+('Arjun Mehta',     'Male',   '1988-01-10', 'B+',  '9876543212', 'arjun@gmail.com',    'Whitefield, Bangalore'),
+('Sneha Reddy',     'Female', '2000-11-05', 'AB+', '9876543213', 'sneha@gmail.com',    'HSR Layout, Bangalore'),
+('Vikram Singh',    'Male',   '1975-06-30', 'O-',  '9876543214', 'vikram@gmail.com',   'Jayanagar, Bangalore'),
+('Ananya Iyer',     'Female', '1992-03-18', 'A-',  '9876543215', 'ananya@gmail.com',   'Malleshwaram, Bangalore'),
+('Karan Patel',     'Male',   '1985-09-25', 'B-',  '9876543216', 'karan@gmail.com',    'Hebbal, Bangalore'),
+('Divya Menon',     'Female', '1998-12-01', 'AB-', '9876543217', 'divya@gmail.com',    'Electronic City, Bangalore');
+
+-- 2. Doctors
+INSERT INTO doctors (name, specialization, phone, email) VALUES
+('Dr. Arjun Kapoor',  'Interventional Cardiology', '9845001001', 'arjun.kapoor@clinic.com'),
+('Dr. Meera Joshi',   'Cardiac Electrophysiology', '9845001002', 'meera.joshi@clinic.com'),
+('Dr. Rajesh Verma',  'Joint Replacement',         '9845001003', 'rajesh.verma@clinic.com'),
+('Dr. Sunita Rao',    'Sports Medicine',            '9845001004', 'sunita.rao@clinic.com'),
+('Dr. Prakash Nair',  'Rhinology',                 '9845001005', 'prakash.nair@clinic.com'),
+('Dr. Kavitha Menon', 'Internal Medicine',         '9845001006', 'kavitha.menon@clinic.com'),
+('Dr. Suresh Pillai', 'Diabetology',               '9845001007', 'suresh.pillai@clinic.com'),
+('Dr. Deepa Sharma',  'Cosmetic Dermatology',      '9845001008', 'deepa.sharma@clinic.com');
+
+-- 3. Doctor schedules
+INSERT INTO doctor_schedules (doctor_id, day_of_week, start_time, end_time, slot_duration) VALUES
+(1, 'Monday',    '09:00', '13:00', 30),
+(1, 'Wednesday', '09:00', '13:00', 30),
+(1, 'Friday',    '09:00', '13:00', 30),
+(2, 'Tuesday',   '10:00', '14:00', 30),
+(2, 'Thursday',  '10:00', '14:00', 30),
+(3, 'Monday',    '14:00', '18:00', 45),
+(3, 'Wednesday', '14:00', '18:00', 45),
+(3, 'Friday',    '14:00', '18:00', 45),
+(4, 'Tuesday',   '09:00', '13:00', 30),
+(4, 'Saturday',  '09:00', '12:00', 30),
+(5, 'Monday',    '10:00', '14:00', 20),
+(5, 'Thursday',  '10:00', '14:00', 20),
+(6, 'Monday',    '09:00', '17:00', 15),
+(6, 'Tuesday',   '09:00', '17:00', 15),
+(6, 'Wednesday', '09:00', '17:00', 15),
+(6, 'Thursday',  '09:00', '17:00', 15),
+(6, 'Friday',    '09:00', '17:00', 15),
+(7, 'Monday',    '14:00', '18:00', 30),
+(7, 'Wednesday', '14:00', '18:00', 30),
+(7, 'Friday',    '14:00', '18:00', 30),
+(8, 'Tuesday',   '11:00', '15:00', 30),
+(8, 'Saturday',  '10:00', '14:00', 30);
+
+-- 4. Appointments
+INSERT INTO appointments (patient_id, doctor_id, appointment_date, status, notes) VALUES
+(1, 1, '2026-05-05 09:00:00', 'Scheduled',  'Routine cardiac checkup'),
+(2, 1, '2026-05-05 09:30:00', 'Scheduled',  'Follow up after ECG'),
+(3, 2, '2026-05-06 10:00:00', 'Scheduled',  'Palpitation complaints'),
+(4, 3, '2026-05-06 14:00:00', 'Scheduled',  'Knee pain evaluation'),
+(5, 4, '2026-05-06 09:00:00', 'Scheduled',  'Post surgery follow up'),
+(6, 5, '2026-05-05 10:00:00', 'Scheduled',  'Sinus congestion'),
+(7, 6, '2026-04-28 09:00:00', 'Completed',  'Fever and cold'),
+(8, 6, '2026-04-28 09:15:00', 'Completed',  'General health checkup'),
+(1, 7, '2026-04-28 14:00:00', 'Completed',  'Diabetes follow up'),
+(2, 8, '2026-04-29 11:00:00', 'Cancelled',  'Patient requested reschedule');
+
+-- 5. Patient health (vitals + medical history)
+INSERT INTO patient_health (patient_id, height_cm, weight_kg, blood_pressure, bmi, allergies, chronic_conditions, past_illnesses, current_medications, family_history) VALUES
+(1, 175.0, 78.0, '130/85', 25.5, 'None',        'Hypertension',          'Typhoid (2018)',          'Amlodipine 5mg',         'Father: Heart disease'),
+(2, 162.0, 58.0, '110/70', 22.1, 'Penicillin',  'None',                  'Dengue (2022)',           'None',                   'Mother: Diabetes'),
+(3, 180.0, 90.0, '125/82', 27.8, 'Dust, Pollen','Asthma',                'Fracture right arm (2019)','Salbutamol inhaler',    'None'),
+(4, 155.0, 52.0, '108/68', 21.6, 'None',        'None',                  'Chickenpox (2005)',       'None',                   'None'),
+(5, 172.0, 95.0, '145/92', 32.1, 'Sulfa drugs', 'Diabetes Type 2, HTN',  'Heart attack (2020)',     'Metformin 500mg, Losartan','Father: Diabetes, Mother: HTN'),
+(6, 158.0, 55.0, '112/72', 22.0, 'None',        'Hypothyroidism',        'Jaundice (2017)',         'Thyroxine 50mcg',        'Mother: Thyroid'),
+(7, 168.0, 82.0, '138/88', 29.0, 'Aspirin',     'Pre-diabetes',          'Malaria (2021)',          'Metformin 250mg',        'Father: Diabetes'),
+(8, 160.0, 60.0, '115/75', 23.4, 'None',        'None',                  'None',                   'None',                   'None');
+
+-- 6. Patient visits (only for completed appointments — IDs 7, 8, 9)
+INSERT INTO patient_visits (patient_id, appointment_id, doctor_id, visit_date, diagnosis, treatment_notes, follow_up_date) VALUES
+(7, 7, 6, '2026-04-28 09:00:00', 'Viral fever',          'Prescribed rest, fluids and paracetamol. Monitor for 3 days.',         '2026-05-05'),
+(8, 8, 6, '2026-04-28 09:15:00', 'Routine checkup',      'All vitals normal. No concerns. Annual checkup recommended.',           NULL),
+(1, 9, 7, '2026-04-28 14:00:00', 'Diabetes management',  'HbA1c slightly elevated. Adjusted Metformin dosage. Diet counselled.',  '2026-05-28');
+
+-- 7. Medicines
+INSERT INTO medicines (name, category, unit, price, stock) VALUES
+('Paracetamol 500mg',   'Analgesic',    'tablet',  2.50,  500),
+('Amoxicillin 250mg',   'Antibiotic',   'capsule', 8.00,  300),
+('Metformin 500mg',     'Antidiabetic', 'tablet',  5.00,  400),
+('Amlodipine 5mg',      'Antihypertensive','tablet',6.50, 250),
+('Cetirizine 10mg',     'Antihistamine','tablet',  3.00,  350),
+('Omeprazole 20mg',     'Antacid',      'capsule', 7.00,  200),
+('Salbutamol inhaler',  'Bronchodilator','inhaler',85.00,  50),
+('Thyroxine 50mcg',     'Hormone',      'tablet',  4.50,  300),
+('Losartan 50mg',       'Antihypertensive','tablet',9.00, 200),
+('Azithromycin 500mg',  'Antibiotic',   'tablet', 18.00,  150);
+
+-- 8. Prescriptions (for completed appointments 7, 8, 9)
+INSERT INTO prescriptions (appointment_id, medicine_id, dosage, duration_days, quantity) VALUES
+(7, 1, '1 tablet every 6 hours',         3,  12),
+(7, 6, '1 capsule before meals',          3,   9),
+(8, 1, 'As needed for pain',           NULL,   5), 
+(9, 3, '1 tablet twice daily after food',30,  60),
+(9, 4, '1 tablet once daily at night',  30,  30);
+
+-- 9. Billing (for completed appointments 7, 8, 9)
+INSERT INTO billing (appointment_id, consultation_fee, medicines_total, total_amount, payment_status, payment_mode, payment_date) VALUES
+(7, 500.00,  28.50,  528.50, 'Paid',    'Cash', '2026-04-28'),
+(8, 500.00,   2.50,  502.50, 'Paid',    'UPI',  '2026-04-28'),
+(9, 700.00, 345.00, 1045.00, 'Pending',  NULL,   NULL);
