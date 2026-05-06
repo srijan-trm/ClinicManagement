@@ -15,7 +15,6 @@ app.get('/', (req, res) => {
     res.send('Clinic Management API is running!');
 });
 
-app.use('/api/departments',  require('./routes/departments'));
 app.use('/api/patients',     require('./routes/patients'));
 app.use('/api/doctors',      require('./routes/doctors'));
 // app.use('/api/appointments', require('./routes/appointments'));
