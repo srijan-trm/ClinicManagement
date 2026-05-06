@@ -20,6 +20,7 @@ app.use('/api/patients',     require('./routes/patients'));
 app.use('/api/doctors',      require('./routes/doctors'));
 app.use('/api/appointments', require('./routes/appointments'));
 app.use('/api/medicines', require('./routes/medicines'));
+app.use('/api/prescriptions', require('./routes/prescriptions'));
 
 /* app.get('/api/patients',(req, res) => {
     const mock = [
