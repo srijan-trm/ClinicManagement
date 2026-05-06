@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
+/*app.use(cors());*/
 app.use(express.json());
 
 const db = require('./db');
@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/patients',     require('./routes/patients'));
 app.use('/api/doctors',      require('./routes/doctors'));
-// app.use('/api/appointments', require('./routes/appointments'));
+app.use('/api/appointments', require('./routes/appointments'));
 
 /* app.get('/api/patients',(req, res) => {
     const mock = [
@@ -29,6 +29,6 @@ app.use('/api/doctors',      require('./routes/doctors'));
 }); */
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
