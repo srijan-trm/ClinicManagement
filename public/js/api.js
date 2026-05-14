@@ -41,5 +41,41 @@ const api = {
             alert('Database connection error. Ensure the backend is running.');
             return false;
         }
+    },
+   async put(endpoint, data) {
+
+    try {
+
+        const response = await fetch(`/api/${endpoint}`, {
+
+            method: 'PUT',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify(data)
+
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+
+            alert(result.error || 'Failed to update');
+
+            return false;
+        }
+
+        return true;
+
+    } catch (error) {
+
+        console.error(error);
+
+        return false;
     }
-};
+}
+}
+
+;

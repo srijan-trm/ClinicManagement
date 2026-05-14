@@ -97,60 +97,46 @@ function formatDocName(name) {
 }
 
 // --- Table Rendering Logic ---
+// --- Table Rendering Logic ---
 function renderTable(data) {
+
     const head = document.getElementById('table-head');
     const body = document.getElementById('table-body');
 
     if (data.length === 0) {
-        body.innerHTML = `<tr><td colspan="5" class="py-20 text-center text-slate-400 text-lg">No matching records found.</td></tr>`;
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="5" class="py-20 text-center text-slate-400 text-lg">
+                    No matching records found.
+                </td>
+            </tr>
+        `;
+
         return;
     }
 
     if (currentTab === 'patients') {
-        head.innerHTML = `<tr><th class="py-4 px-8">ID</th><th class="py-4 px-8">Patient Name</th><th class="py-4 px-8">Blood</th><th class="py-4 px-8">Phone</th></tr>`;
-        body.innerHTML = data.map(p => `
-            <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition-colors">
-                <td class="py-5 px-8 font-bold text-slate-400">#${p.patient_id}</td>
-                <td class="py-5 px-8 font-bold text-slate-800 text-lg">${p.name} <span class="text-sm font-medium text-slate-400 ml-2">${p.gender || ''}</span></td>
-                <td class="py-5 px-8"><span class="px-3 py-1.5 rounded-lg bg-rose-100 text-rose-700 text-sm font-bold shadow-sm border border-rose-200/50">${p.blood_group || '-'}</span></td>
-                <td class="py-5 px-8 text-slate-600 font-medium">${p.phone}</td>
-            </tr>
-        `).join('');
-    } 
+
+        renderPatients(data);
+
+    }
+
     else if (currentTab === 'doctors') {
-        head.innerHTML = `<tr><th class="py-4 px-8">ID</th><th class="py-4 px-8">Doctor Name</th><th class="py-4 px-8">Specialty</th><th class="py-4 px-8">Contact</th></tr>`;
-        body.innerHTML = data.map(d => `
-            <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition-colors">
-                <td class="py-5 px-8 font-bold text-slate-400">#${d.doctor_id}</td>
-                <td class="py-5 px-8 font-bold text-slate-800 text-lg">${formatDocName(d.name)}</td>
-                <td class="py-5 px-8"><span class="px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-700 text-sm font-bold shadow-sm border border-indigo-200/50">${d.specialization || 'General'}</span></td>
-                <td class="py-5 px-8 text-slate-600 font-medium">${d.phone}</td>
-            </tr>
-        `).join('');
+
+        renderDoctors(data);
+
     }
+
     else if (currentTab === 'appointments') {
-        head.innerHTML = `<tr><th class="py-4 px-8">Date & Time</th><th class="py-4 px-8">Patient</th><th class="py-4 px-8">Doctor</th><th class="py-4 px-8">Status</th></tr>`;
-        body.innerHTML = data.map(a => {
-            const date = new Date(a.appointment_date);
-            const statusColor = a.status === 'Completed' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300';
-            return `
-            <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition-colors">
-                <td class="py-5 px-8 font-semibold text-slate-800 text-lg">${date.toLocaleDateString()} <span class="text-base text-blue-600 ml-2 font-bold">${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></td>
-                <td class="py-5 px-8 font-bold text-slate-600">${a.patient_name}</td>
-                <td class="py-5 px-8 font-bold text-slate-600">${formatDocName(a.doctor_name)}</td>
-                <td class="py-5 px-8"><span class="px-4 py-1.5 rounded-lg border shadow-sm ${statusColor} text-sm font-bold">${a.status}</span></td>
-            </tr>
-        `}).join('');
+
+        renderAppointments(data);
+
     }
+
     else if (currentTab === 'medicines') {
-        head.innerHTML = `<tr><th class="py-4 px-8">ID</th><th class="py-4 px-8">Drug Name</th><th class="py-4 px-8">Price</th><th class="py-4 px-8">Stock Level</th></tr>`;
-        body.innerHTML = data.map(m => `
-            <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition-colors">
-                <td class="py-5 px-8 font-bold text-slate-400">#${m.medicine_id}</td>
-                <td class="py-5 px-8 font-bold text-slate-800 text-lg">${m.name} <span class="text-sm font-medium text-slate-400 ml-2">${m.category || ''}</span></td>
-                <td class="py-5 px-8 text-emerald-600 font-extrabold text-lg">$${m.price}</td>
-                <td class="py-5 px-8 font-bold text-lg ${m.stock < 20 ? 'text-rose-600 bg-rose-50 px-4 py-1 rounded-lg inline-block mt-3 border border-rose-200' : 'text-slate-700'}">${m.stock}</td>
-            </tr>
-        `).join('');
+
+        renderMedicines(data);
+
     }
 }
