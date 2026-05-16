@@ -75,6 +75,40 @@ const api = {
 
         return false;
     }
+},
+async patch(endpoint, data) {
+
+    try {
+
+        const response = await fetch(`/api/${endpoint}`, {
+
+            method: 'PATCH',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify(data)
+
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+
+            alert(result.error || 'Failed to update');
+
+            return false;
+        }
+
+        return true;
+
+    } catch (error) {
+
+        console.error(error);
+
+        return false;
+    }
 }
 }
 

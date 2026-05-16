@@ -2,16 +2,33 @@ const pool = require('../db');
 
 // Get all appointments with patient and doctor names
 const getAllAppointments = async () => {
+
     const result = await pool.query(
+
         `SELECT 
-            a.appointment_id, a.appointment_date, a.status, a.notes,
-            p.name AS patient_name, p.phone AS patient_phone,
-            d.name AS doctor_name, d.specialization
+            a.appointment_id,
+            a.patient_id,
+            a.appointment_date,
+            a.status,
+            a.notes,
+
+            p.name AS patient_name,
+            p.phone AS patient_phone,
+
+            d.name AS doctor_name,
+            d.specialization
+
          FROM appointments a
-         JOIN patients p ON a.patient_id = p.patient_id
-         JOIN doctors d ON a.doctor_id = d.doctor_id
+
+         JOIN patients p
+         ON a.patient_id = p.patient_id
+
+         JOIN doctors d
+         ON a.doctor_id = d.doctor_id
+
          ORDER BY a.appointment_date DESC`
     );
+
     return result.rows;
 };
 

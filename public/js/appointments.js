@@ -8,7 +8,8 @@ function renderAppointments(data) {
         <th class="py-4 px-8">Date & Time</th>
         <th class="py-4 px-8">Patient</th>
         <th class="py-4 px-8">Doctor</th>
-        <th class="py-4 px-8">Status</th>
+       <th class="py-4 px-8">Status</th>
+       <th class="py-4 px-8">Actions</th>
     </tr>`;
 
     body.innerHTML = data.map(a => {
@@ -36,13 +37,52 @@ function renderAppointments(data) {
             </td>
 
             <td class="py-5 px-8">
-                <span class="px-4 py-1.5 rounded-lg border shadow-sm ${statusColor} text-sm font-bold">
-                    ${a.status}
-                </span>
-            </td>
+    <span class="px-4 py-1.5 rounded-lg border shadow-sm ${statusColor} text-sm font-bold">
+        ${a.status}
+    </span>
+</td>
+
+<td class="py-5 px-8">
+
+    <div class="flex gap-2">
+
+    <button
+        onclick="openHealthProfile(${a.patient_id})"
+        class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg font-semibold hover:bg-emerald-200 transition"
+    >
+        Patient Info
+    </button>
+
+    <button
+        onclick="markAppointmentCompleted(${a.appointment_id})"
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+    >
+        Complete
+    </button>
+
+</div>
+
+</td>
 
         </tr>
         `;
 
     }).join('');
+}
+async function markAppointmentCompleted(appointmentId) {
+
+    const success = await api.patch(
+
+        `appointments/${appointmentId}/status`,
+
+        {
+            status: 'Completed'
+        }
+    );
+
+    if (success) {
+
+        loadData();
+
+    }
 }
