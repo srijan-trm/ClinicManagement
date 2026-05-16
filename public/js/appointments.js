@@ -59,6 +59,12 @@ function renderAppointments(data) {
     >
         Complete
     </button>
+    <button
+    onclick="openPrescriptionModal(${a.appointment_id})"
+    class="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
+>
+    Prescription
+</button>
 
 </div>
 

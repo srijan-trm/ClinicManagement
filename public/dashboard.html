@@ -93,7 +93,113 @@
         </div>
     </div>
 
+ <!-- Prescription Modal -->
+<div id="modal-prescription" style="display:none;" class="fixed inset-0 z-50 items-center justify-center bg-black/50">
+
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden">
+
+    <div class="px-8 py-5 border-b border-slate-100 bg-slate-50/80 flex justify-between items-center">
+
+        <h3 class="text-xl font-bold text-slate-800">
+            Add Prescription
+        </h3>
+
+        <button
+            onclick="closeModal()"
+            class="text-slate-500 hover:text-slate-800 text-2xl font-bold"
+        >
+            ×
+        </button>
+
+    </div>
+
+    <form id="prescription-form" class="p-8">
+
+        <input type="hidden" id="prescription-appointment-id">
+
+        <div class="space-y-5">
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1.5">
+                    Medicine ID
+                </label>
+
+                <input
+                    type="number"
+                    id="prescription-medicine-id"
+                    class="w-full border border-slate-300 p-3 rounded-xl"
+                >
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1.5">
+                    Dosage
+                </label>
+
+                <input
+                    type="text"
+                    id="prescription-dosage"
+                    placeholder="1 tablet after food"
+                    class="w-full border border-slate-300 p-3 rounded-xl"
+                >
+            </div>
+
+            <div class="grid grid-cols-2 gap-5">
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1.5">
+                        Duration (days)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="prescription-duration"
+                        class="w-full border border-slate-300 p-3 rounded-xl"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1.5">
+                        Quantity
+                    </label>
+
+                    <input
+                        type="number"
+                        id="prescription-quantity"
+                        class="w-full border border-slate-300 p-3 rounded-xl"
+                    >
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="mt-8 flex justify-end gap-4">
+
+            <button
+                type="button"
+                onclick="closeModal()"
+                class="px-6 py-3 text-base font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                onclick="savePrescription()"
+                class="px-6 py-3 text-base font-bold bg-purple-600 text-white rounded-xl hover:bg-purple-700"
+            >
+                Save Prescription
+            </button>
+
+        </div>
+
+    </form>
+    </div>
+</div>
+
     <!-- Application Logic -->
+
     <script>
         // Check server connection status
         async function checkServer() {
@@ -200,7 +306,20 @@
                     <td class="py-3 px-6 font-medium">${a.patient_name}</td>
                     <td class="py-3 px-6 font-medium text-gray-600">Dr. ${a.doctor_name}</td>
                     <td class="py-3 px-6"><span class="${statusColor} py-1 px-3 rounded-full text-xs font-bold border">${a.status || 'Scheduled'}</span></td>
-                    <td class="py-3 px-6 text-right"><button class="text-blue-500 hover:text-blue-700 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Manage</button></td>
+                    <td class="py-3 px-6 text-right">
+
+    <div class="flex justify-end gap-2">
+
+        <button
+            onclick="openPrescriptionModal(${a.appointment_id})"
+            class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg text-sm font-semibold"
+        >
+            Prescription
+        </button>
+
+    </div>
+
+</td>
                 </tr>
             `}).join('');
         }
@@ -262,6 +381,24 @@
         // Initialize App on load
         checkServer();
         renderPatients();
+ 
+window.openPrescriptionModal = function(appointmentId) {
+
+    console.log("clicked", appointmentId);
+
+    const modal = document.getElementById('modal-prescription');
+
+    modal.style.display = 'flex';
+
+    document.getElementById('prescription-appointment-id').value = appointmentId;
+};
+
+window.closeModal = function() {
+
+    document.getElementById('modal-prescription').style.display = 'none';
+};
+
+
 
     </script>
 </body>
