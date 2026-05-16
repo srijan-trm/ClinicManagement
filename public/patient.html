@@ -35,6 +35,7 @@
 
                
 
+
             </nav>
 
         </div>
@@ -225,7 +226,7 @@ async function loadPatient() {
     try {
 
         // temporary patient id
-        const patientId = 1;
+       const patientId = localStorage.getItem('patientId');
 
         const response = await fetch(`/api/patients/${patientId}`);
 

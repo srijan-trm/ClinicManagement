@@ -17,18 +17,41 @@ const getPatientById = async (id) => {
     return result.rows[0];
 };
 
-// Create a new patient
-const createPatient = async (name, gender, date_of_birth, blood_group, phone, email, address) => {
-    const result = await pool.query(
-        `INSERT INTO patients 
-            (name, gender, date_of_birth, blood_group, phone, email, address) 
-         VALUES 
-            ($1, $2, $3, $4, $5, $6, $7) 
-         RETURNING *`,
-        [name, gender, date_of_birth, blood_group, phone, email, address]
-    );
-    return result.rows[0];
-};
+
+
+const createPatient = async (
+    name,
+    gender,
+    date_of_birth,
+    blood_group,
+    phone,
+    email,
+    address,
+    password
+) => {
+
+
+  
+const result = await pool.query(
+    `INSERT INTO patients
+        (name, gender, date_of_birth, blood_group, phone, email, address, password)
+     VALUES
+        ($1, $2, $3, $4, $5, $6, $7, $8)
+     RETURNING *`,
+    [
+        name,
+        gender,
+        date_of_birth,
+        blood_group,
+        phone,
+        email,
+        address,
+        password
+    ]
+);
+return result.rows[0]; };
+
+
 
 // Update a patient
 const updatePatient = async (id, name, gender, date_of_birth, blood_group, phone, email, address) => {

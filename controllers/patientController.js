@@ -35,19 +35,19 @@ const getOne = async (req, res) => {
 
 const create = async (req, res) => {
     try {
-        const { name, gender, date_of_birth, blood_group, phone, email, address } = req.body;
+        const { name, gender, date_of_birth, blood_group, phone, email, address, password } = req.body;
         // validate required fields
         if (!name || !phone) {
             return res.status(400).json({ error: 'Name and phone are required' });
         }
-        const patient = await createPatient(name, gender, date_of_birth, blood_group, phone, email, address);
+      const patient = await createPatient( name, gender, date_of_birth, blood_group, phone, email, address, password );
         res.status(201).json(patient);
     } catch (err) {
         // handle duplicate phone/email
         if (err.code === '23505') {
             return res.status(400).json({ error: 'Phone or email already exists' });
         }
-        res.status(500).json({ error: err.message });
+   console.log(err); res.status(500).json({ error: err.message });
     }
 };
 
