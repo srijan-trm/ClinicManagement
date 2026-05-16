@@ -72,3 +72,15 @@ async function saveHealthProfile() {
 
     }
 }
+async function openAppointmentBooking(patientId) {
+
+    document.getElementById('modal-overlay').classList.remove('hidden');
+
+    document.querySelectorAll('.form-modal').forEach(m => {
+        m.classList.add('hidden');
+    });
+
+    document.getElementById('modal-appointments').classList.remove('hidden');
+
+    document.querySelector('#form-appointments input[name="patient_id"]').value = patientId;
+}

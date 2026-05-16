@@ -29,13 +29,60 @@ const getAppointmentById = async (id) => {
 };
 
 // Create a new appointment
-const createAppointment = async (patient_id, doctor_id, appointment_date, status = 'Scheduled', notes = '') => {
-    const result = await pool.query(
-        `INSERT INTO appointments (patient_id, doctor_id, appointment_date, status, notes)
-         VALUES ($1, $2, $3, $4, $5)
-         RETURNING *`,
-        [patient_id, doctor_id, appointment_date, status, notes]
+const createAppointment = async (
+    patient_id,
+    doctor_id,
+    appointment_date,
+    status = 'Scheduled',
+    notes = ''
+) => {
+
+    // Check if slot already exists
+    const existing = await pool.query(
+
+        `
+        SELECT *
+        FROM appointments
+        WHERE doctor_id = $1
+        AND appointment_date = $2
+        `,
+
+        [doctor_id, appointment_date]
     );
+
+    if (existing.rows.length > 0) {
+
+        throw new Error('Doctor already has appointment at this time');
+
+    }
+
+    // Insert appointment
+    const result = await pool.query(
+
+        `
+        INSERT INTO appointments
+        (
+            patient_id,
+            doctor_id,
+            appointment_date,
+            status,
+            notes
+        )
+
+        VALUES ($1, $2, $3, $4, $5)
+
+        RETURNING *
+        `,
+
+        [
+            patient_id,
+            doctor_id,
+            appointment_date,
+            status,
+            notes
+        ]
+    );
+
     return result.rows[0];
 };
 

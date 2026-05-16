@@ -37,13 +37,26 @@ function renderPatients(data) {
             </td>
 
             <td class="py-5 px-8">
-                <button
-                    onclick="openHealthProfile(${p.patient_id})"
-                    class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-semibold hover:bg-indigo-200 transition"
-                >
-                    View Profile
-                </button>
-            </td>
+
+    <div class="flex gap-2">
+
+        <button
+            onclick="openHealthProfile(${p.patient_id})"
+            class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-semibold hover:bg-indigo-200 transition"
+        >
+            View Profile
+        </button>
+
+        <button
+            onclick="openAppointmentBooking(${p.patient_id})"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+        >
+            Book Appointment
+        </button>
+
+    </div>
+
+</td>
 
         </tr>
     `).join('');
