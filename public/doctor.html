@@ -10,6 +10,37 @@
 </head>
 
 <body class="bg-slate-100 font-sans">
+   
+<div
+    id="patient-modal"
+    class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50"
+>
+
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+
+        <h2 class="text-2xl font-bold text-slate-800 mb-6">
+            Patient Details
+        </h2>
+
+        <div
+            id="patient-details"
+            class="space-y-3 text-slate-700"
+        >
+
+        </div>
+
+        <button
+            onclick="closePatientModal()"
+            class="mt-6 w-full bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-semibold"
+        >
+            Close
+        </button>
+
+    </div>
+
+</div>
+
+
 
     <div class="flex min-h-screen">
 
@@ -114,8 +145,7 @@ async function loadDoctor() {
 
     try {
 
-        // temporary doctor id
-        const doctorId = 1;
+      const doctorId = localStorage.getItem('doctorId');
 
         const response =
             await fetch(`/api/doctors/${doctorId}`);
@@ -139,7 +169,7 @@ async function loadAppointments() {
 
     try {
 
-        const doctorId = 1;
+      const doctorId = localStorage.getItem('doctorId');
 
         const response =
             await fetch('/api/appointments');
@@ -147,10 +177,18 @@ async function loadAppointments() {
         const appointments =
             await response.json();
 
-        const doctorAppointments =
-            appointments.filter(a =>
-                a.doctor_id == doctorId
-            );
+     
+const doctorName =
+    document.getElementById('doctor-name')
+        .innerText
+        .replace('Dr. ', '');
+
+const doctorAppointments =
+    appointments.filter(a =>
+        a.doctor_name === doctorName
+    );
+
+
 
         const container =
             document.getElementById('appointments-list');
@@ -182,12 +220,34 @@ async function loadAppointments() {
 
                     </div>
 
-                    <button
-                        onclick="completeAppointment(${a.appointment_id})"
-                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold"
-                    >
-                        Complete
-                    </button>
+                   
+                   
+${a.status === 'Completed'
+
+? `
+
+<button
+    class="bg-slate-400 text-white px-4 py-2 rounded-xl font-semibold cursor-not-allowed"
+>
+    Completed
+</button>
+
+`
+
+: `
+
+<button
+    onclick="completeAppointment(${a.appointment_id})"
+    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold"
+>
+    Complete
+</button>
+
+`
+}
+
+
+                     <button onclick="viewPatient(${a.patient_id})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-semibold ml-2" > View Patient </button>
 
                 </div>
 
@@ -204,9 +264,9 @@ async function completeAppointment(id) {
 
     try {
 
-        await fetch(`/api/appointments/${id}`, {
+        await fetch(`/api/appointments/${id}/status`, {
 
-            method: 'PUT',
+           method: 'PATCH',
 
             headers: {
                 'Content-Type': 'application/json'
@@ -219,8 +279,7 @@ async function completeAppointment(id) {
         });
 
         alert('Appointment Completed');
-
-        loadAppointments();
+       await loadAppointments();
 
     } catch (error) {
 
@@ -228,6 +287,71 @@ async function completeAppointment(id) {
 
     }
 }
+
+
+async function viewPatient(id) {
+
+    try {
+
+        const response =
+            await fetch(`/api/patients/${id}`);
+
+        const patient =
+            await response.json();
+
+        document.getElementById('patient-details').innerHTML = `
+
+            <div>
+                <span class="font-bold">Name:</span>
+                ${patient.name}
+            </div>
+
+            <div>
+                <span class="font-bold">Gender:</span>
+                ${patient.gender}
+            </div>
+
+            <div>
+                <span class="font-bold">Blood Group:</span>
+                ${patient.blood_group}
+            </div>
+
+            <div>
+                <span class="font-bold">Phone:</span>
+                ${patient.phone}
+            </div>
+
+            <div>
+                <span class="font-bold">Email:</span>
+                ${patient.email}
+            </div>
+
+        `;
+
+        document
+            .getElementById('patient-modal')
+            .classList.remove('hidden');
+
+        document
+            .getElementById('patient-modal')
+            .classList.add('flex');
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+}
+
+function closePatientModal() {
+
+    document
+        .getElementById('patient-modal')
+        .classList.add('hidden');
+}
+
+
+
 
 loadDoctor();
 loadAppointments();

@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Signup</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md">
+
+        <h1 class="text-3xl font-bold text-center text-green-600 mb-8">
+            Doctor Signup
+        </h1>
+
+        <div class="space-y-5">
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Doctor Name"
+                class="w-full border border-slate-300 rounded-xl p-3"
+            >
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                class="w-full border border-slate-300 rounded-xl p-3"
+            >
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                class="w-full border border-slate-300 rounded-xl p-3"
+            >
+
+            <input
+                type="text"
+                id="phone"
+                placeholder="Phone Number"
+                class="w-full border border-slate-300 rounded-xl p-3"
+            >
+
+            <input
+                type="text"
+                id="specialization"
+                placeholder="Specialization"
+                class="w-full border border-slate-300 rounded-xl p-3"
+            >
+
+            <button
+                onclick="signupDoctor()"
+                class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold"
+            >
+                Create Doctor Account
+            </button>
+
+        </div>
+
+    </div>
+    
+<script>
+
+async function signupDoctor() {
+
+    try {
+
+        const name =
+            document.getElementById('name').value;
+
+        const email =
+            document.getElementById('email').value;
+
+        const password =
+            document.getElementById('password').value;
+
+        const phone =
+            document.getElementById('phone').value;
+
+        const specialization =
+            document.getElementById('specialization').value;
+
+        const response = await fetch('/api/doctors', {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+                phone,
+                specialization
+            })
+
+        });
+      alert('Doctor Account Created'); window.location.href = '/doctorlogin.html';
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+}
+
+</script>
+
+
+</body>
+</html>
+

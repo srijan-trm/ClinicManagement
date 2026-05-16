@@ -290,7 +290,7 @@ async function loadAppointments() {
 
     try {
 
-        const patientId = 1;
+        const patientId = localStorage.getItem('patientId');
 
         const response =
             await fetch('/api/appointments');
@@ -354,7 +354,7 @@ async function bookAppointment() {
 
     try {
 
-        const patient_id = 1;
+       const patient_id = localStorage.getItem('patientId')
 
         const doctor_id =
             document.getElementById('appointment-doctor').value;

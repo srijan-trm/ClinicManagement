@@ -37,14 +37,14 @@ const getOne = async (req, res) => {
 const create = async (req, res) => {
     try {
         // Removed department_id from destructuring
-        const { name, specialization, phone, email } = req.body;
+       const { name, specialization, phone, email, password } = req.body;
         
         if (!name || !phone) {
             return res.status(400).json({ error: 'Name and phone are required' });
         }
         
         // Pass updated parameters to the query
-        const doctor = await createDoctor(name, specialization, phone, email);
+       createDoctor( name, specialization, phone, email, password )
         res.status(201).json(doctor);
     } catch (err) {
         if (err.code === '23505') {
