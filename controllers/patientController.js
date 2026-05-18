@@ -9,7 +9,6 @@ const {
 
 const getAll = async (req, res) => {
     try {
-        // if a search query is passed e.g. /api/patients?search=raj
         if (req.query.search) {
             const patients = await searchPatients(req.query.search);
             return res.status(200).json(patients);
@@ -36,25 +35,45 @@ const getOne = async (req, res) => {
 const create = async (req, res) => {
     try {
         const { name, gender, date_of_birth, blood_group, phone, email, address, password } = req.body;
-        // validate required fields
+        
         if (!name || !phone) {
             return res.status(400).json({ error: 'Name and phone are required' });
         }
-      const patient = await createPatient( name, gender, date_of_birth, blood_group, phone, email, address, password );
+        
+        const patient = await createPatient(
+            name, 
+            gender, 
+            date_of_birth || null, 
+            blood_group || null, 
+            phone, 
+            email, 
+            address || null, 
+            password
+        );
         res.status(201).json(patient);
     } catch (err) {
-        // handle duplicate phone/email
         if (err.code === '23505') {
             return res.status(400).json({ error: 'Phone or email already exists' });
         }
-   console.log(err); res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 };
 
 const update = async (req, res) => {
     try {
         const { name, gender, date_of_birth, blood_group, phone, email, address } = req.body;
-        const patient = await updatePatient(req.params.id, name, gender, date_of_birth, blood_group, phone, email, address);
+        
+        const patient = await updatePatient(
+            req.params.id, 
+            name, 
+            gender, 
+            date_of_birth || null, 
+            blood_group || null, 
+            phone, 
+            email, 
+            address || null
+        );
+        
         if (!patient) {
             return res.status(404).json({ error: 'Patient not found' });
         }
@@ -73,9 +92,8 @@ const remove = async (req, res) => {
         if (!patient) {
             return res.status(404).json({ error: 'Patient not found' });
         }
-        res.status(200).json({ message: 'Patient deleted', patient });
+        res.status(200).json({ message: 'Patient deleted successfully' });
     } catch (err) {
-        // handle case where patient has appointments
         if (err.code === '23503') {
             return res.status(400).json({ error: 'Cannot delete patient with existing appointments' });
         }

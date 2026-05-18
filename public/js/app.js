@@ -1,7 +1,6 @@
 let currentTab = 'patients';
-let currentData = []; // Stores the active tab's data for instant searching
+let currentData = [];
 
-// --- Initialization ---
 document.addEventListener('DOMContentLoaded', async () => {
     const isAlive = await api.checkHealth();
     const statusEl = document.getElementById('server-status');
@@ -16,26 +15,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// --- Tab & UI Logic ---
 function switchTab(tab) {
     currentTab = tab;
     
-    const titles = { 'patients': 'Patients', 'doctors': 'Doctors', 'appointments': 'Appointments', 'medicines': 'Pharmacy' };
+    // 1. Update Page Title
+    const titles = { 'patients': 'Patients', 'doctors': 'Doctors', 'appointments': 'Appointments' };
     document.getElementById('page-title').textContent = titles[tab] + ' Directory';
 
-    // Clear the search bar when switching tabs
-    document.getElementById('search-bar').value = '';
+    // 2. Update the Add Button Text
+    const addBtnText = document.getElementById('add-btn-text');
+    if (addBtnText) {
+        if (tab === 'patients') addBtnText.textContent = 'Add New Patient';
+        if (tab === 'doctors') addBtnText.textContent = 'Add New Doctor';
+        if (tab === 'appointments') addBtnText.textContent = 'Add New Appointment';
+    }
 
+    // 3. Clear Search & Reset Tabs
+    document.getElementById('search-bar').value = '';
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.className = "tab-btn group w-full flex items-center gap-3 py-3 px-4 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-semibold transition-all duration-200";
     });
     
-    document.getElementById(`tab-${tab}`).className = "tab-btn group w-full flex items-center gap-3 py-3 px-4 rounded-xl bg-blue-100 text-blue-800 font-bold shadow-sm border border-blue-200/50 transition-all duration-200";
+    const activeTab = document.getElementById(`tab-${tab}`);
+    if (activeTab) {
+        activeTab.className = "tab-btn group w-full flex items-center gap-3 py-3 px-4 rounded-xl bg-blue-100 text-blue-800 font-bold shadow-sm border border-blue-200/50 transition-all duration-200";
+    }
 
     loadData();
 }
 
-// --- Modal Logic ---
 function openModal() {
     document.getElementById('modal-overlay').classList.remove('hidden');
     document.querySelectorAll('.form-modal').forEach(m => m.classList.add('hidden'));
@@ -47,96 +55,75 @@ function closeModal() {
     document.querySelectorAll('.form-modal form').forEach(form => form.reset());
 }
 
-// --- Form Submission Logic ---
 async function handleFormSubmit(event, endpoint) {
     event.preventDefault(); 
-    
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData.entries());
 
-    if(data.price) data.price = parseFloat(data.price);
-    if(data.stock) data.stock = parseInt(data.stock);
     if(data.patient_id) data.patient_id = parseInt(data.patient_id);
     if(data.doctor_id) data.doctor_id = parseInt(data.doctor_id);
 
     const success = await api.post(endpoint, data);
-    
     if (success) {
         closeModal();
         loadData(); 
     }
 }
 
-// --- Data Fetching & Live Search ---
 async function loadData() {
     const body = document.getElementById('table-body');
     body.innerHTML = `<tr><td colspan="5" class="py-20 text-center text-slate-400 font-semibold text-lg">Loading data...</td></tr>`;
-
-    // Fetch fresh data from the database and save it to our global array
     currentData = await api.get(currentTab);
     renderTable(currentData);
 }
 
 function handleSearch() {
     const query = document.getElementById('search-bar').value.toLowerCase();
-    
-    // Filter the currentData array. It checks every column (name, phone, status, etc.)
     const filteredData = currentData.filter(row => {
-        return Object.values(row).some(val => 
-            String(val).toLowerCase().includes(query)
-        );
+        return Object.values(row).some(val => String(val).toLowerCase().includes(query));
     });
-    
     renderTable(filteredData);
 }
 
-// Helper to prevent the "Dr. Dr." bug
 function formatDocName(name) {
     if (!name) return '';
     return name.toLowerCase().startsWith('dr') ? name : 'Dr. ' + name;
 }
 
-// --- Table Rendering Logic ---
-// --- Table Rendering Logic ---
 function renderTable(data) {
-
-    const head = document.getElementById('table-head');
     const body = document.getElementById('table-body');
-
     if (data.length === 0) {
-
-        body.innerHTML = `
-            <tr>
-                <td colspan="5" class="py-20 text-center text-slate-400 text-lg">
-                    No matching records found.
-                </td>
-            </tr>
-        `;
-
+        body.innerHTML = `<tr><td colspan="5" class="py-20 text-center text-slate-400 text-lg">No matching records found.</td></tr>`;
         return;
     }
 
-    if (currentTab === 'patients') {
+    if (currentTab === 'patients') renderPatients(data);
+    else if (currentTab === 'doctors') renderDoctors(data);
+    else if (currentTab === 'appointments') renderAppointments(data);
+}
 
-        renderPatients(data);
+async function deleteRecord(endpoint, id) {
+    // 1. Double check with a confirmation box before dropping table records
+    const confirmation = confirm(`Are you sure you want to permanently delete this record from ${endpoint}?`);
+    if (!confirmation) return;
 
-    }
+    try {
+        // 2. Fire an HTTP DELETE request to your backend API route layout
+        const response = await fetch(`/api/${endpoint}/${id}`, {
+            method: 'DELETE'
+        });
 
-    else if (currentTab === 'doctors') {
+        const result = await response.json();
 
-        renderDoctors(data);
-
-    }
-
-    else if (currentTab === 'appointments') {
-
-        renderAppointments(data);
-
-    }
-
-    else if (currentTab === 'medicines') {
-
-        renderMedicines(data);
-
+        if (response.ok) {
+            alert(result.message || 'Record successfully removed from the database!');
+            loadData(); // Re-fetch data instantly to update the view grid matrix smoothly
+        } else {
+            // 3. This catches the 23503 foreign-key constraint alerts we configured!
+            alert(`Database Protection Error: ${result.error}`);
+        }
+    } catch (error) {
+        console.error("Deletion Failed:", error);
+        alert("Server error occurred while executing deletion query.");
     }
 }

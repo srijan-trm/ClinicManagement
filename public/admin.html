@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Management Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; font-size: 15px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        #table-body { transition: opacity 0.2s ease; }
+        .loading { opacity: 0.5; pointer-events: none; filter: grayscale(50%); }
+        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="bg-slate-50/50 text-slate-800 antialiased h-screen overflow-hidden flex">
+
+    <div class="w-72 bg-white border-r border-slate-200 flex flex-col z-20 shadow-xl shadow-slate-200/20">
+        <div class="p-6 flex items-center gap-4 border-b border-slate-100">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-200">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+            </div>
+            <h1 class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-700 tracking-tight">MediClinic</h1>
+        </div>
+        
+        <nav class="mt-6 flex-1 space-y-2 px-4" id="sidebar-nav">
+            <button onclick="switchTab('patients')" id="tab-patients" class="tab-btn group w-full flex items-center gap-3 py-3 px-4 rounded-xl text-base font-medium transition-all duration-200">
+                <svg class="w-6 h-6 opacity-80 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                Patients
+            </button>
+            <button onclick="switchTab('doctors')" id="tab-doctors" class="tab-btn group w-full flex items-center gap-3 py-3 px-4 rounded-xl text-base font-medium transition-all duration-200">
+                <svg class="w-6 h-6 opacity-80 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                Doctors
+            </button>
+            <button onclick="switchTab('appointments')" id="tab-appointments" class="tab-btn group w-full flex items-center gap-3 py-3 px-4 rounded-xl text-base font-medium transition-all duration-200">
+                <svg class="w-6 h-6 opacity-80 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                Appointments
+            </button>
+        </nav>
+
+        <div class="p-4 mt-auto border-t border-slate-200">
+            <button onclick="window.location.href='/index.html'" class="w-full text-left px-4 py-3 rounded-xl hover:bg-rose-50 text-rose-600 font-bold flex items-center gap-3 transition-colors">
+                <span>🚪</span> Log Out
+            </button>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col relative h-full overflow-hidden">
+        
+        <header class="glass-header z-10 border-b border-slate-200 px-10 py-6 flex justify-between items-center shrink-0">
+            <div>
+                <p class="text-base font-medium text-blue-500 mb-1 tracking-wide uppercase">System Overview</p>
+                <h2 id="page-title" class="text-3xl font-extrabold text-slate-800 tracking-tight">Patients Directory</h2>
+            </div>
+            <div id="server-status" class="text-sm px-4 py-2 rounded-full border font-semibold flex items-center gap-2 transition-colors shadow-sm">
+                <div class="w-2.5 h-2.5 rounded-full bg-slate-300 animate-pulse"></div>
+                Checking Server...
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-10">
+            <div class="bg-white rounded-2xl shadow-lg shadow-slate-200/40 border border-slate-200 flex flex-col">
+                <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-2xl">
+                    <div class="relative">
+                        <svg class="w-5 h-5 absolute left-4 top-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <input type="text" id="search-bar" oninput="handleSearch()" placeholder="Search by name, phone, status..." class="pl-12 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-base w-80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-slate-700 shadow-sm placeholder-slate-400">
+                    </div>
+                    <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-base font-semibold py-3 px-6 rounded-xl shadow-md shadow-blue-200 transition-all duration-200 flex items-center gap-2 transform hover:-translate-y-0.5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                        <span id="add-btn-text">Add New Patient</span>
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left whitespace-nowrap">
+                        <thead id="table-head" class="bg-slate-50 text-slate-500 uppercase text-xs font-bold tracking-widest border-b border-slate-200"></thead>
+                        <tbody id="table-body" class="text-base"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex justify-center items-center transition-opacity">
+        
+        <div id="modal-patients" class="form-modal hidden bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
+            <div class="px-8 py-5 border-b border-slate-100 bg-slate-50/80">
+                <h3 class="text-xl font-bold text-slate-800">Add New Patient</h3>
+            </div>
+            <form id="form-patients" onsubmit="handleFormSubmit(event, 'patients')" class="p-8">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">Full Name</label>
+                        <input type="text" name="name" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm">
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">Email</label>
+                            <input type="email" name="email" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">Password</label>
+                            <input type="password" name="password" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">Phone</label>
+                            <input type="text" name="phone" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">Date of Birth</label>
+                            <input type="date" name="date_of_birth" class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm bg-white">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">Gender</label>
+                            <select name="gender" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm bg-white">
+                                <option value="">Select...</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">Blood Group</label>
+                            <select name="blood_group" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm bg-white">
+                                <option value="">Select...</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end gap-4">
+                    <button type="button" onclick="closeModal()" class="px-6 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 text-sm font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md transition-colors">Save Patient</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="modal-doctors" class="form-modal hidden bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="px-8 py-5 border-b border-slate-100 bg-slate-50/80">
+                <h3 class="text-xl font-bold text-slate-800">Add New Doctor</h3>
+            </div>
+            <form id="form-doctors" onsubmit="handleFormSubmit(event, 'doctors')" class="p-8">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">Doctor Name</label>
+                        <input type="text" name="name" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">Specialization</label>
+                        <input type="text" name="specialization" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm">
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">Email</label>
+                            <input type="email" name="email" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">Phone</label>
+                            <input type="text" name="phone" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end gap-4">
+                    <button type="button" onclick="closeModal()" class="px-6 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 text-sm font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md transition-colors">Save Doctor</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="modal-appointments" class="form-modal hidden bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="px-8 py-5 border-b border-slate-100 bg-slate-50/80">
+                <h3 class="text-xl font-bold text-slate-800">Book Appointment</h3>
+            </div>
+            <form id="form-appointments" onsubmit="handleFormSubmit(event, 'appointments')" class="p-8">
+                <div class="space-y-4">
+                    
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">Patient Name</label>
+                            <select name="patient_id" id="appointment-patient-select" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm bg-white">
+                                <option value="">Loading patients...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-slate-600 mb-1">Doctor Name</label>
+                            <select name="doctor_id" id="appointment-doctor-select" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm bg-white">
+                                <option value="">Loading doctors...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">Date & Time</label>
+                        <input type="datetime-local" name="appointment_date" required class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">Status</label>
+                        <select name="status" class="w-full border border-slate-300 p-2.5 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm bg-white">
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end gap-4">
+                    <button type="button" onclick="closeModal()" class="px-6 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 text-sm font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md transition-colors">Book Appt</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="modal-health" class="form-modal hidden bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+            <div class="px-8 py-5 border-b border-slate-100 bg-slate-50/80 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-800">Patient Health Profile</h3>
+                <button onclick="closeModal()" type="button" class="text-slate-500 hover:text-slate-800 text-2xl font-bold">&times;</button>
+            </div>
+            <form id="health-form" class="p-8">
+                <input type="hidden" id="health-patient-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Blood Group</label>
+                        <select id="health-blood-group" class="w-full border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                            <option value="">Select...</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Height (cm)</label>
+                        <input type="number" id="health-height" class="w-full border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Weight (kg)</label>
+                        <input type="number" id="health-weight" class="w-full border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-5 mt-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Blood Pressure</label>
+                        <input type="text" id="health-bp" placeholder="120/80" class="w-full border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">BMI</label>
+                        <input type="number" step="0.01" id="health-bmi" class="w-full border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <label class="block text-sm font-semibold text-slate-600 mb-1.5">Allergies</label>
+                    <textarea id="health-allergies" rows="3" class="w-full border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
+                <div class="mt-5">
+                    <label class="block text-sm font-semibold text-slate-600 mb-1.5">Chronic Conditions</label>
+                    <textarea id="health-conditions" rows="3" class="w-full border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
+                <div class="mt-8 flex justify-end gap-4">
+                    <button type="button" onclick="closeModal()" class="px-6 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
+                    <button type="button" onclick="saveHealthProfile()" class="px-6 py-2.5 text-sm font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md transition-colors">Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/patients.js"></script>
+    <script src="/js/doctors.js"></script>
+    <script src="/js/appointments.js"></script>
+    <script src="/js/health.js"></script>
+    <script src="/js/app.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Fetch Patients and fill dropdown
+                const pRes = await fetch('/api/patients');
+                if (pRes.ok) {
+                    const patients = await pRes.json();
+                    const pSelect = document.getElementById('appointment-patient-select');
+                    if (pSelect) {
+                        pSelect.innerHTML = '<option value="">Select a Patient...</option>' + 
+                            patients.map(p => `<option value="${p.patient_id}">${p.name} (ID: ${p.patient_id})</option>`).join('');
+                    }
+                }
+
+                // Fetch Doctors and fill dropdown
+                const dRes = await fetch('/api/doctors');
+                if (dRes.ok) {
+                    const doctors = await dRes.json();
+                    const dSelect = document.getElementById('appointment-doctor-select');
+                    if (dSelect) {
+                        dSelect.innerHTML = '<option value="">Select a Doctor...</option>' + 
+                            doctors.map(d => `<option value="${d.doctor_id}">Dr. ${d.name} - ${d.specialization}</option>`).join('');
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading dropdown data:", error);
+            }
+        });
+    </script>
+</body>
+</html>

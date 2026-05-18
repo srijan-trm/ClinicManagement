@@ -32,15 +32,14 @@ const create = async (req, res) => {
         const { patient_id, doctor_id, appointment_date, status, notes } = req.body;
         
         if (!patient_id || !doctor_id || !appointment_date) {
-            return res.status(400).json({ error: 'Patient ID, Doctor ID, and Date are required' });
+            return res.status(400).json({ error: 'Patient, Doctor, and Appointment Date fields are required' });
         }
 
-        const appointment = await createAppointment(patient_id, doctor_id, appointment_date, status, notes);
+        const appointment = await createAppointment(patient_id, doctor_id, appointment_date, status || 'Scheduled', notes || '');
         res.status(201).json(appointment);
     } catch (err) {
-        // Handle foreign key constraint errors (e.g., patient or doctor doesn't exist)
         if (err.code === '23503') {
-            return res.status(400).json({ error: 'Invalid Patient ID or Doctor ID' });
+            return res.status(400).json({ error: 'Invalid Patient selection or Doctor selection' });
         }
         res.status(500).json({ error: err.message });
     }
@@ -50,12 +49,12 @@ const updateStatus = async (req, res) => {
     try {
         const { status } = req.body;
         if (!status) {
-            return res.status(400).json({ error: 'Status is required' });
+            return res.status(400).json({ error: 'Status update parameter is required' });
         }
 
         const appointment = await updateAppointmentStatus(req.params.id, status);
         if (!appointment) {
-            return res.status(404).json({ error: 'Appointment not found' });
+            return res.status(404).json({ error: 'Appointment record not found' });
         }
         res.status(200).json(appointment);
     } catch (err) {
@@ -67,9 +66,9 @@ const remove = async (req, res) => {
     try {
         const appointment = await deleteAppointment(req.params.id);
         if (!appointment) {
-            return res.status(404).json({ error: 'Appointment not found' });
+            return res.status(404).json({ error: 'Appointment record not found' });
         }
-        res.status(200).json({ message: 'Appointment deleted', appointment });
+        res.status(200).json({ message: 'Appointment cancelled and removed' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

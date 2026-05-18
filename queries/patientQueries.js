@@ -3,7 +3,7 @@ const pool = require('../db');
 // Get all patients
 const getAllPatients = async () => {
     const result = await pool.query(
-        'SELECT * FROM patients ORDER BY patient_id'
+        'SELECT * FROM patients ORDER BY patient_id ASC'
     );
     return result.rows;
 };
@@ -17,43 +17,20 @@ const getPatientById = async (id) => {
     return result.rows[0];
 };
 
+// Create a new patient (with login credentials and health details)
+const createPatient = async (name, gender, date_of_birth, blood_group, phone, email, address, password) => {
+    const result = await pool.query(
+        `INSERT INTO patients
+            (name, gender, date_of_birth, blood_group, phone, email, address, password)
+         VALUES
+            ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING *`,
+        [name, gender, date_of_birth, blood_group, phone, email, address, password]
+    );
+    return result.rows[0];
+};
 
-
-const createPatient = async (
-    name,
-    gender,
-    date_of_birth,
-    blood_group,
-    phone,
-    email,
-    address,
-    password
-) => {
-
-
-  
-const result = await pool.query(
-    `INSERT INTO patients
-        (name, gender, date_of_birth, blood_group, phone, email, address, password)
-     VALUES
-        ($1, $2, $3, $4, $5, $6, $7, $8)
-     RETURNING *`,
-    [
-        name,
-        gender,
-        date_of_birth,
-        blood_group,
-        phone,
-        email,
-        address,
-        password
-    ]
-);
-return result.rows[0]; };
-
-
-
-// Update a patient
+// Update an existing patient
 const updatePatient = async (id, name, gender, date_of_birth, blood_group, phone, email, address) => {
     const result = await pool.query(
         `UPDATE patients 

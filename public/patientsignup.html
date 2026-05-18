@@ -1,136 +1,142 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Signup</title>
-
+    <title>MediClinic - Patient Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
+<body class="bg-slate-100 flex flex-col items-center justify-center min-h-screen p-6">
 
-<body class="bg-slate-100 flex items-center justify-center min-h-screen">
-
-    <div class="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md">
-
-        <h1 class="text-3xl font-bold text-center text-blue-600 mb-8">
-            Patient Signup
-        </h1>
-
-        <div class="space-y-5">
-
-            <input
-                type="text"
-                id="name"
-                placeholder="Full Name"
-                class="w-full border border-slate-300 rounded-xl p-3"
-            >
-
-            <input
-                type="email"
-                id="email"
-                placeholder="Email"
-                class="w-full border border-slate-300 rounded-xl p-3"
-            >
-
-            <input
-                type="password"
-                id="password"
-                placeholder="Password"
-                class="w-full border border-slate-300 rounded-xl p-3"
-            >
-
-            <input
-                type="text"
-                id="phone"
-                placeholder="Phone Number"
-                class="w-full border border-slate-300 rounded-xl p-3"
-            >
-
-            <select
-                id="gender"
-                class="w-full border border-slate-300 rounded-xl p-3"
-            >
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-            </select>
-
-            <button
-                onclick="signupPatient()"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold"
-            >
-                Create Account
-            </button>
-
+    <div class="w-full max-w-lg fade-in relative">
+        
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-700 tracking-tight">MediClinic</h1>
+            <p class="text-slate-500 mt-2">Create your patient account</p>
         </div>
 
+        <div class="bg-white rounded-xl shadow-md border border-slate-200 p-8 relative">
+            
+            <a href="index.html" class="absolute top-6 left-6 text-slate-400 hover:text-slate-700 text-sm font-medium transition-colors">
+                &larr; Back to Login
+            </a>
+
+            <h2 class="text-xl font-bold text-slate-800 mb-6 mt-8 border-b border-slate-100 pb-4">
+                Registration Form
+            </h2>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Full Name</label>
+                    <input type="text" id="name" placeholder="John Doe" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Email Address</label>
+                        <input type="email" id="email" placeholder="john@example.com" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+                        <input type="password" id="password" placeholder="Create a password" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Phone Number</label>
+                        <input type="text" id="phone" placeholder="123-456-7890" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Date of Birth</label>
+                        <input type="date" id="dob" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow bg-white">
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Gender</label>
+                        <select id="gender" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow bg-white">
+                            <option value="">Select...</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Blood Group</label>
+                        <select id="blood_group" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow bg-white">
+                            <option value="">Select...</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button onclick="signupPatient()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-sm transition-colors mt-6">
+                    Create Account
+                </button>
+            </div>
+        </div>
     </div>
    
-<script>
+    <script>
+    async function signupPatient() {
+        try {
+            // Extracting all the data from the form
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const phone = document.getElementById('phone').value;
+            const gender = document.getElementById('gender').value;
+            const dob = document.getElementById('dob').value;
+            const blood_group = document.getElementById('blood_group').value;
 
-async function signupPatient() {
+            // Basic validation for the crucial login details
+            if(!name || !email || !password) {
+                alert("Name, email, and password are required!");
+                return;
+            }
 
-    try {
+            // Sending the complete data package to your PostgreSQL API
+            const response = await fetch('/api/patients', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: name, 
+                    email: email,
+                    password: password,
+                    phone: phone,
+                    gender: gender, 
+                    date_of_birth: dob || null, 
+                    blood_group: blood_group || null, 
+                    address: null // Leaving address null for now as per your schema
+                })
+            });
 
-        const name =
-            document.getElementById('name').value;
+            if (!response.ok) {
+                alert('Signup Failed. This email might already exist in the database.');
+                return;
+            }
 
-        const email =
-            document.getElementById('email').value;
+            alert('Account Created Successfully! Please login.');
+            window.location.href = '/index.html'; 
 
-        const password =
-            document.getElementById('password').value;
-
-        const phone =
-            document.getElementById('phone').value;
-
-        const gender =
-            document.getElementById('gender').value;
-
-        const response = await fetch('/api/patients', {
-
-            method: 'POST',
-
-            headers: {
-                'Content-Type': 'application/json'
-            },
-
-           body: JSON.stringify({
-    name,
-    gender,
-    date_of_birth: null,
-    blood_group: null,
-    phone,
-    email,
-    address: null,
-    password
-})
-
-        });
-
-        if (!response.ok) {
-
-            alert('Signup Failed');
-
-            return;
+        } catch (error) {
+            console.error(error);
         }
-
-        alert('Account Created Successfully');
-
-        window.location.href = '/patientlogin.html';
-
-    } catch (error) {
-
-        console.error(error);
-
     }
-}
-
-</script>
-
-
-
+    </script>
 </body>
 </html>
-

@@ -9,7 +9,6 @@ const {
 
 const getAll = async (req, res) => {
     try {
-        // search: /api/doctors?search=meera
         if (req.query.search) {
             const doctors = await searchDoctors(req.query.search);
             return res.status(200).json(doctors);
@@ -36,33 +35,28 @@ const getOne = async (req, res) => {
 
 const create = async (req, res) => {
     try {
-        // Removed department_id from destructuring
-       const { name, specialization, phone, email, password } = req.body;
+        // Password parameter safely dropped here to stay in sync with the updated query signatures
+        const { name, specialization, phone, email } = req.body;
         
         if (!name || !phone) {
             return res.status(400).json({ error: 'Name and phone are required' });
         }
         
-        // Pass updated parameters to the query
-       createDoctor( name, specialization, phone, email, password )
+        const doctor = await createDoctor(name, specialization, phone, email);
         res.status(201).json(doctor);
     } catch (err) {
         if (err.code === '23505') {
             return res.status(400).json({ error: 'Phone or email already exists' });
         }
-        // Removed the 23503 check since departments are no longer a foreign key here
         res.status(500).json({ error: err.message });
     }
 };
 
 const update = async (req, res) => {
     try {
-        // Removed department_id from destructuring
         const { name, specialization, phone, email } = req.body;
         
-        // Pass updated parameters to the query
         const doctor = await updateDoctor(req.params.id, name, specialization, phone, email);
-        
         if (!doctor) {
             return res.status(404).json({ error: 'Doctor not found' });
         }
@@ -81,9 +75,8 @@ const remove = async (req, res) => {
         if (!doctor) {
             return res.status(404).json({ error: 'Doctor not found' });
         }
-        res.status(200).json({ message: 'Doctor deleted', doctor });
+        res.status(200).json({ message: 'Doctor deleted safely' });
     } catch (err) {
-        // Kept this 23503 check because it protects against deleting doctors who are tied to existing appointments or schedules
         if (err.code === '23503') {
             return res.status(400).json({ error: 'Cannot delete doctor with existing appointments or schedules' });
         }
